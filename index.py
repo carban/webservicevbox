@@ -4,9 +4,12 @@ import subprocess
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def saludo():
 	return jsonify({"response":"Web VBoxManage Service"})
+#Example
+#curl -i http://localhost:5000
 
 def splitnames(l):
        arr = []
@@ -20,6 +23,10 @@ def ls():
        out = p1.stdout.decode('ascii')
        res = splitnames(out.split())
        return jsonify({'response':res})
+    
+#Example
+#curl -i http://localhost:5000/machines/list
+
 
 @app.route('/machines/info/<string:macName>', methods=['GET'])
 def infoMac(macName):
@@ -38,7 +45,11 @@ def infoMac(macName):
        "Number of CPUs": spliter[47]
        }
        return jsonify({'info':ajson}) 
-       
+
+#Example
+#curl -i http://localhost:5000/info/first
+
+
 @app.route('/machines/changeName', methods=['POST'])
 def changeNameMac():
        if not request.json or not 'newname' or not 'osname' in request.json:
@@ -49,6 +60,10 @@ def changeNameMac():
        out = p1.stdout.decode('ascii')
        return jsonify({'response': 'name updated'})
 
+#Example
+#curl -H "Content-Type: application/json" -X POST -d '{"osname": "first", "newname": "primero"}' http://localhost:5000/machines/changeName
+
+
 @app.route('/machines/changeCpus', methods=['POST'])
 def changeCpus():
        if not request.json or not 'cpus' or not 'osname' in request.json:
@@ -58,6 +73,12 @@ def changeCpus():
        p1 = subprocess.run(["VBoxManage", "modifyvm", osName, "--cpus", cpusNumber], stdout=subprocess.PIPE)
        out = p1.stdout.decode('ascii')
        return jsonify({'response': 'cps updated'})
+    
+#Example
+#curl -H "Content-Type: application/json" -X POST -d '{"osname": "first", "cpus": "4"}' http://localhost:5000/machines/changeCpus
+
+
+
 
 @app.route('/machines/changeMemory', methods=['POST'])
 def changeMemory():
@@ -69,6 +90,8 @@ def changeMemory():
        out = p1.stdout.decode('ascii')
        return jsonify({'response': 'memory updated'})
 
+#Example
+#curl -H "Content-Type: application/json" -X POST -d '{"osname": "first", "memory": "1024"}' http://localhost:5000/machines/changeMemory
 
 
 if __name__ == '__main__':
